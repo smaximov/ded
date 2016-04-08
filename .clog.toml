@@ -1,0 +1,6 @@
+[clog]
+repository = "https://gitlab.com/smaximov/ded"
+link-style = "gitlab"
+from-latest-tag = true
+
+changelog = "CHANGELOG.md"

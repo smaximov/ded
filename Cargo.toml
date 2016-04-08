@@ -1,0 +1,9 @@
+[package]
+name = "ded"
+version = "0.1.0"
+authors = ["smaximov <s.b.maximov@gmail.com>"]
+
+[dependencies]
+eventual = "^0.1.6"
+rust-crypto = "^0.2.35"
+sequence_trie = "^0.0.13"
