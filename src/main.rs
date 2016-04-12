@@ -2,6 +2,7 @@ use std::env;
 use std::io;
 use std::io::{Write};
 
+extern crate clap;
 extern crate crypto;
 extern crate eventual;
 extern crate sequence_trie;
