@@ -3,6 +3,7 @@ name = "ded"
 version = "0.2.0"
 authors = ["smaximov <s.b.maximov@gmail.com>"]
 description = "Directory EDit"
+license-file = "LICENSE"
 
 [dependencies]
 clap = "^2.2.5"
