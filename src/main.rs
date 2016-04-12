@@ -9,10 +9,9 @@ extern crate crypto;
 extern crate eventual;
 extern crate sequence_trie;
 
-use clap::{Arg};
-
 pub mod app;
 pub mod entry;
+pub mod cli;
 pub mod error;
 pub mod formatter;
 pub mod parser;
@@ -24,20 +23,12 @@ use util::{temp_dir, get_editor};
 const TMP_PREFIX: &'static str = "ded";
 
 fn main() {
-    let matches = clap::App::new(env!("CARGO_PKG_NAME"))
-        .version(env!("CARGO_PKG_VERSION"))
-        .author(env!("CARGO_PKG_AUTHORS"))
-        .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg(Arg::with_name("WORKING_DIR")
-             .index(1)
-             .help("working directory [defaults to $PWD]"))
-        .get_matches();
-
     let editor = get_editor();
+    let args = cli::args();
 
-    let working_dir = matches.value_of("WORKING_DIR")
+    let working_dir = args.value_of("dir")
         .map(|dir| PathBuf::from(dir).canonicalize())
-        .unwrap_or(env::current_dir());
+        .unwrap_or_else(|| env::current_dir());
 
     let working_dir = match working_dir {
         Ok(dir) => dir,
