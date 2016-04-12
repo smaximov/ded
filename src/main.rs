@@ -63,5 +63,6 @@ fn main() {
     if let Err(e) = app.run() {
         let mut stderr = io::stderr();
         writeln!(stderr, "Directory edit error: {}", e).unwrap();
+        exit(1);
     }
 }
