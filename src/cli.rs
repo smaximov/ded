@@ -8,6 +8,6 @@ pub fn args<'a>() -> ArgMatches<'a> {
         .arg(Arg::with_name("dir")
              .index(1)
              .value_name("DIR")
-             .help("working directory [defaults to $PWD]"))
+             .help("Working directory [defaults to $PWD]"))
         .get_matches()
 }
