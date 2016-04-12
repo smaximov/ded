@@ -23,12 +23,15 @@ use util::{temp_dir, get_editor};
 const TMP_PREFIX: &'static str = "ded";
 
 fn main() {
-    let editor = get_editor();
     let args = cli::args();
 
     let working_dir = args.value_of("dir")
         .map(|dir| PathBuf::from(dir).canonicalize())
         .unwrap_or_else(|| env::current_dir());
+
+    let editor = args.value_of("editor")
+        .map(String::from)
+        .unwrap_or_else(|| get_editor());
 
     let working_dir = match working_dir {
         Ok(dir) => dir,

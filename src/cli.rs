@@ -9,5 +9,11 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .index(1)
              .value_name("DIR")
              .help("Working directory [defaults to $PWD]"))
+        .arg(Arg::with_name("editor")
+             .short("e")
+             .long("editor")
+             .takes_value(true)
+             .value_name("EDITOR")
+             .help("Editor to use [defaults to $VISUAL, $EDITOR, or vi]"))
         .get_matches()
 }
