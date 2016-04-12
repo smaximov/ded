@@ -19,17 +19,19 @@ pub struct Config {
     dir: PathBuf,
     transforms_path: PathBuf,
     editor: String,
-    hash_width: usize
+    hash_width: usize,
+    show_hidden: bool
 }
 
 impl Config {
-    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str) -> Self {
+    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool) -> Self {
         let dir = dir.as_ref();
         Config {
             dir: dir.to_path_buf(),
             editor: String::from(editor),
             transforms_path: tmp_dir.as_ref().join(sha1(&dir.to_string_lossy())),
-            hash_width: 8
+            hash_width: 8,
+            show_hidden: show_hidden
         }
     }
 }
@@ -75,6 +77,10 @@ impl App {
 
         for entry in entries {
             let entry = Entry::new(try!(entry).path());
+
+            if !self.config.show_hidden && entry.is_hidden() {
+                continue;
+            }
 
             {
                 let mut hash = entry.hash_short(self.config.hash_width);

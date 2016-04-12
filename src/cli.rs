@@ -15,5 +15,9 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .takes_value(true)
              .value_name("EDITOR")
              .help("Editor to use [defaults to $VISUAL, $EDITOR, or vi]"))
+        .arg(Arg::with_name("all")
+             .short("a")
+             .long("all")
+             .help("Don't ignore hidden files and directories"))
         .get_matches()
 }

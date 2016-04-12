@@ -42,10 +42,12 @@ fn main() {
         }
     };
 
+    let all = args.is_present("all");
+
     let path = temp_dir(TMP_PREFIX)
         .expect("cannot create temporary directory");
 
-    let config = Config::new(&working_dir, &path, &editor);
+    let config = Config::new(&working_dir, &path, &editor, all);
     let mut app = App::new(config);
 
     if let Err(e) = app.run() {
