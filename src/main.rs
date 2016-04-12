@@ -19,15 +19,9 @@ pub mod parser;
 pub mod util;
 
 use app::{App, Config};
-use util::{temp_dir};
+use util::{temp_dir, get_editor};
 
 const TMP_PREFIX: &'static str = "ded";
-
-fn get_editor() -> String {
-    env::var("VISUAL")
-        .or(env::var("EDITOR"))
-        .unwrap_or(String::from("vi"))
-}
 
 fn main() {
     let matches = clap::App::new(env!("CARGO_PKG_NAME"))

@@ -23,6 +23,12 @@ pub fn width(n: usize) -> usize {
     (n as f64).log10().floor() as usize + 1
 }
 
+pub fn get_editor() -> String {
+    env::var("VISUAL")
+        .or(env::var("EDITOR"))
+        .unwrap_or(String::from("vi"))
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
