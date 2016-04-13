@@ -213,14 +213,14 @@ mod tests {
     fn get() {
         let mut map = EntryMap::new();
         let entry = Entry::new(PathBuf::from("/root"));
-        let hash_short = entry.hash_short();
+        let hash_short = entry.hash_short(8);
 
         map.insert(entry.clone());
 
         assert!(map.get(&hash_short).is_ok());
         assert!(map.get("derp").is_err());
 
-        map.insert(Entry::with_hash(hash_short.clone(), PathBuf::from("/root/foo")));
+        map.insert(Entry::with_hash(String::from(hash_short), PathBuf::from("/root/foo")));
 
         assert!(map.get(&hash_short).is_err());
     }
