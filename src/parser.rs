@@ -58,25 +58,19 @@ impl error::Error for Error {
 pub type Result<R> = result::Result<R, Error>;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub struct Transform {
-    hash_fragment: String,
-    pattern: String
+pub enum Transform {
+    Rename {
+        hash_fragment: String,
+        pattern: String
+    }
 }
 
 impl Transform {
-    pub fn new(hash_fragment: String, pattern: String) -> Self {
-        Transform {
+    pub fn rename(hash_fragment: String, pattern: String) -> Self {
+        Transform::Rename {
             hash_fragment: hash_fragment,
             pattern: pattern
         }
-    }
-
-    pub fn pattern(&self) -> &str {
-        &self.pattern
-    }
-
-    pub fn hash_fragment(&self) -> &str {
-        &self.hash_fragment
     }
 }
 
@@ -311,10 +305,7 @@ impl Parser {
             return Err(Error::new("expected a pattern", pos));
         }
 
-        Ok(Transform {
-            hash_fragment: hash_fragment,
-            pattern: pattern
-        })
+        Ok(Transform::rename(hash_fragment, pattern))
     }
 
     pub fn parse(&mut self) -> Result<Vec<Transform>> {
@@ -538,8 +529,8 @@ mod tests {
                                       \t   \n\
                                       # ^ this is an empty line\n\
                                       deadbeef /etc/secret");
-        assert_eq!(Ok(Transform { hash_fragment: String::from("deadbeef"),
-                                  pattern: String::from("/etc/secret") }),
+        assert_eq!(Ok(Transform::Rename { hash_fragment: String::from("deadbeef"),
+                                          pattern: String::from("/etc/secret") }),
                    parser.transform());
         assert!(parser.eof().is_ok());
     }

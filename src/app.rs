@@ -155,20 +155,22 @@ impl App {
     }
 
     fn apply_transform(&self, entries: &EntryMap, transform: &Transform, fmt: &mut Formatter) -> Result<()> {
-        let path = try!(fmt.format(transform.pattern()));
-        let new = self.config.dir.join(path);
+        match *transform {
+            Transform::Rename { ref pattern, hash_fragment: ref hash } => {
+                let path = try!(fmt.format(pattern));
+                let new = self.config.dir.join(path);
+                let entry = try!(entries.get(hash));
 
-        let hash = transform.hash_fragment();
-        let entry = try!(entries.get(hash));
+                let old = entry.path();
 
-        let old = entry.path();
-
-        if old != new {
-            print!("rename `{}' -> `{}'... ", old.display(), new.display());
-            let result = rename(&old, &new);
-            let status = if result.is_err() { "failure" } else { "success" };
-            println!("{}", status);
-            try!(result);
+                if old != new {
+                    print!("rename `{}' -> `{}'... ", old.display(), new.display());
+                    let result = rename(&old, &new);
+                    let status = if result.is_err() { "failure" } else { "success" };
+                    println!("{}", status);
+                    try!(result);
+                }
+            }
         }
 
         Ok(())
