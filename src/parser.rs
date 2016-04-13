@@ -62,6 +62,9 @@ pub enum Transform {
     Rename {
         hash_fragment: String,
         pattern: String
+    },
+    Remove {
+        hash_fragment: String
     }
 }
 
@@ -70,6 +73,19 @@ impl Transform {
         Transform::Rename {
             hash_fragment: hash_fragment,
             pattern: pattern
+        }
+    }
+
+    pub fn remove(hash_fragment: String) -> Self {
+        Transform::Remove {
+            hash_fragment: hash_fragment
+        }
+    }
+
+    pub fn hash_fragment(&self) -> &str {
+        match *self {
+            Transform::Rename { ref hash_fragment, .. } => hash_fragment,
+            Transform::Remove { ref hash_fragment, .. } => hash_fragment
         }
     }
 }
@@ -296,16 +312,24 @@ impl Parser {
     fn transform(&mut self) -> Result<Transform> {
         self.ignore_whitespace();
         let hash_fragment = try!(self.hex_string());
-        try!(self.ignore_many1(&|x: &mut Parser| x.one_of(" \t")));
 
-        let pos = self.position();
-        let pattern = self.take_until_consume(&Parser::line_ending);
+        let space = self.try_parser(&|x: &mut Parser| {
+            x.ignore_many1(&|x: &mut Parser| x.one_of(" \t"))
+        });
 
-        if pattern.trim() == "" {
-            return Err(Error::new("expected a pattern", pos));
+        if space.is_none() {
+            let pos = self.position();
+            return self.line_ending()
+                .map(|_| Transform::remove(hash_fragment))
+                .map_err(|e| Error::new_wrap("expected pattern", pos, e));
         }
 
-        Ok(Transform::rename(hash_fragment, pattern))
+        let pattern = self.take_until_consume(&Parser::line_ending);
+
+        Ok(match pattern.trim() {
+            "" => Transform::remove(hash_fragment),
+            pattern => Transform::rename(hash_fragment, String::from(pattern))
+        })
     }
 
     pub fn parse(&mut self) -> Result<Vec<Transform>> {
@@ -532,6 +556,20 @@ mod tests {
         assert_eq!(Ok(Transform::Rename { hash_fragment: String::from("deadbeef"),
                                           pattern: String::from("/etc/secret") }),
                    parser.transform());
+        assert!(parser.eof().is_ok());
+
+        parser.reset("#  this is a comment\n\
+                      \t   \n\
+                      # ^ this is an empty line\n\
+                      deadbeef ");
+        assert_eq!(Ok(Transform::Remove { hash_fragment: String::from("deadbeef")}), parser.transform());
+        assert!(parser.eof().is_ok());
+
+        parser.reset("#  this is a comment\n\
+                      \t   \n\
+                      # ^ this is an empty line\n\
+                      deadbeef");
+        assert_eq!(Ok(Transform::Remove { hash_fragment: String::from("deadbeef")}), parser.transform());
         assert!(parser.eof().is_ok());
     }
 }

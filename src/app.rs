@@ -1,5 +1,5 @@
 use std::collections::{HashSet};
-use std::fs::{remove_file, rename, File};
+use std::fs::{remove_dir_all, remove_file, rename, File};
 use std::io;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -155,13 +155,14 @@ impl App {
     }
 
     fn apply_transform(&self, entries: &EntryMap, transform: &Transform, fmt: &mut Formatter) -> Result<()> {
+        let hash = transform.hash_fragment();
+        let entry = try!(entries.get(hash));
+        let old = entry.path();
+
         match *transform {
-            Transform::Rename { ref pattern, hash_fragment: ref hash } => {
+            Transform::Rename { ref pattern, .. } => {
                 let path = try!(fmt.format(pattern));
                 let new = self.config.dir.join(path);
-                let entry = try!(entries.get(hash));
-
-                let old = entry.path();
 
                 if old != new {
                     print!("rename `{}' -> `{}'... ", old.display(), new.display());
@@ -170,6 +171,17 @@ impl App {
                     println!("{}", status);
                     try!(result);
                 }
+            },
+            Transform::Remove { .. } => {
+                print!("remove `{}'...", old.display());
+                let result = if old.is_dir() {
+                    remove_dir_all(&old)
+                } else {
+                    remove_file(&old)
+                };
+                let status = if result.is_err() { "failure" } else { "success" };
+                println!("{}", status);
+                try!(result);
             }
         }
 
