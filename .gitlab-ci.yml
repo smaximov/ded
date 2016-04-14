@@ -1,0 +1,30 @@
+stages:
+  - test
+
+beta:
+  image: smaximov/rust:beta
+  stage: test
+  script:
+    - cargo test
+  tags:
+    - rust
+    - rust-beta
+
+nightly:
+  image: smaximov/rust:nightly
+  stage: test
+  script:
+    - cargo test
+  tags:
+    - rust
+    - rust-nightly
+
+# Cannot build with stable Rust at the moment
+.stable:
+  image: smaximov/rust:stable
+  stage: test
+  script:
+    - cargo test
+  tags:
+    - rust
+    - rust-stable
