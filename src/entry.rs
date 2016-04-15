@@ -32,7 +32,8 @@ impl Entry {
     }
 
     pub fn basename(&self) -> String {
-        self.path.file_name().unwrap().to_string_lossy().into_owned()
+        self.path.file_name().unwrap_or_else(|| self.path.as_os_str())
+            .to_string_lossy().into_owned()
     }
 
     pub fn is_hidden(&self) -> bool {
