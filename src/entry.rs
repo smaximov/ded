@@ -31,12 +31,12 @@ impl Entry {
         &self.hash()[0..width]
     }
 
-    pub fn file_name(&self) -> String {
+    pub fn basename(&self) -> String {
         self.path.file_name().unwrap().to_string_lossy().into_owned()
     }
 
     pub fn is_hidden(&self) -> bool {
-        self.file_name().starts_with(".")
+        self.basename().starts_with(".")
     }
 
     pub fn path(&self) -> &Path {

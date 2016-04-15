@@ -109,7 +109,7 @@ impl App {
             try!(writeln!(file, "{1: >0$} {2}",
                           self.config.hash_width,
                           entry.hash_short(self.config.hash_width),
-                          Formatter::escape(&entry.file_name())));
+                          Formatter::escape(&entry.basename())));
         }
 
         Ok(())
