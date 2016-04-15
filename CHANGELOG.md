@@ -1,4 +1,15 @@
 <a name=""></a>
+##  v0.3.0 (2016-04-15)
+
+
+#### Features
+
+*   append trailing slash (fs separator) to directories when editing entries ([200ad712](https://gitlab.com/smaximov/ded/commit/200ad712d02ac48ed2b0c3d98efa6fecfd932bb5))
+*   implement the removal of files and directories ([cf70f72d](https://gitlab.com/smaximov/ded/commit/cf70f72d888c5e168f95c5c10e07428be7964df5))
+
+
+
+<a name=""></a>
 ##  v0.2.0 (2016-04-12)
 
 
