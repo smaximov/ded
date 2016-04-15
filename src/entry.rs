@@ -1,6 +1,6 @@
 use std::cmp::{Ordering};
 use std::ops::{Deref};
-use std::path::{Path, PathBuf};
+use std::path::{MAIN_SEPARATOR, Path, PathBuf};
 
 use util::{sha1};
 
@@ -32,8 +32,15 @@ impl Entry {
     }
 
     pub fn basename(&self) -> String {
-        self.path.file_name().unwrap_or_else(|| self.path.as_os_str())
-            .to_string_lossy().into_owned()
+        let mut basename = self.path.file_name()
+            .unwrap_or_else(|| self.path.as_os_str())
+            .to_string_lossy().into_owned();
+
+        if self.path.is_dir() {
+            basename.push(MAIN_SEPARATOR);
+        }
+
+        basename
     }
 
     pub fn is_hidden(&self) -> bool {
