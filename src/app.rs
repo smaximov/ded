@@ -21,18 +21,20 @@ pub struct Config {
     transforms_path: PathBuf,
     editor: String,
     hash_width: usize,
-    show_hidden: bool
+    show_hidden: bool,
+    verbose: bool
 }
 
 impl Config {
-    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool) -> Self {
+    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool, verbose: bool) -> Self {
         let dir = dir.as_ref();
         Config {
             dir: dir.to_path_buf(),
             editor: String::from(editor),
             transforms_path: tmp_dir.as_ref().join(sha1(&dir.to_string_lossy())),
             hash_width: 8,
-            show_hidden: show_hidden
+            show_hidden: show_hidden,
+            verbose: verbose
         }
     }
 }
@@ -104,9 +106,19 @@ impl App {
         let path = &self.config.transforms_path;
         let mut file = try!(File::create(path));
 
-        try!(writeln!(file, "# Edit directory {}", self.config.dir.display()));
+        try!(writeln!(file, "# Edit directory {}\n", self.config.dir.display()));
 
         for entry in entries {
+            if self.config.verbose {
+                let kind = if entry.path().is_dir() {
+                    "Directory"
+                } else {
+                    "File"
+                };
+
+                try!(writeln!(file, "# {} {}", kind, entry.path().display()));
+            }
+
             try!(writeln!(file, "{1: >0$} {2}",
                           self.config.hash_width,
                           entry.hash_short(self.config.hash_width),

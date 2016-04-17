@@ -43,6 +43,7 @@ fn main() {
     };
 
     let all = args.is_present("all");
+    let verbose = args.is_present("verbose");
 
     let path = match temp_dir(TMP_PREFIX) {
         Ok(path) => path,
@@ -53,7 +54,7 @@ fn main() {
         }
     };
 
-    let config = Config::new(&working_dir, &path, &editor, all);
+    let config = Config::new(&working_dir, &path, &editor, all, verbose);
     let mut app = App::new(config);
 
     if let Err(e) = app.run() {

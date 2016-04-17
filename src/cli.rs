@@ -22,6 +22,10 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .short("a")
              .long("all")
              .help("Don't ignore hidden files and directories"))
+        .arg(Arg::with_name("verbose")
+             .short("v")
+             .long("verbose")
+             .help("Tell more details [disabled by default]"))
         .get_matches()
 }
 
