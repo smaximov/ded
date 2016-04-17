@@ -2,42 +2,18 @@ use std::collections::{HashSet};
 use std::fs::{remove_dir_all, remove_file, rename, File};
 use std::io;
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
 use std::process::{Command};
 use std::result;
 
 use eventual::{Async, Future};
 
+use config::{Config};
 use cli;
 use entry::{Entry, EntryMap};
 use error::{Error};
 use formatter::{Formatter};
 use parser::{Parser, Transform};
-use util::{sha1, width};
-
-#[derive(Debug)]
-pub struct Config {
-    dir: PathBuf,
-    transforms_path: PathBuf,
-    editor: String,
-    hash_width: usize,
-    show_hidden: bool,
-    verbose: bool
-}
-
-impl Config {
-    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool, verbose: bool) -> Self {
-        let dir = dir.as_ref();
-        Config {
-            dir: dir.to_path_buf(),
-            editor: String::from(editor),
-            transforms_path: tmp_dir.as_ref().join(sha1(&dir.to_string_lossy())),
-            hash_width: 8,
-            show_hidden: show_hidden,
-            verbose: verbose
-        }
-    }
-}
+use util::{width};
 
 #[derive(Debug)]
 pub struct App {

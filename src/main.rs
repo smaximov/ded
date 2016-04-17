@@ -12,12 +12,13 @@ extern crate sequence_trie;
 pub mod app;
 pub mod entry;
 pub mod cli;
+pub mod config;
 pub mod error;
 pub mod formatter;
 pub mod parser;
 pub mod util;
 
-use app::{App, Config};
+use app::{App};
 use util::{temp_dir, get_editor};
 
 const TMP_PREFIX: &'static str = "ded";
@@ -54,7 +55,7 @@ fn main() {
         }
     };
 
-    let config = Config::new(&working_dir, &path, &editor, all, verbose);
+    let config = config::Config::new(&working_dir, &path, &editor, all, verbose);
     let mut app = App::new(config);
 
     if let Err(e) = app.run() {
