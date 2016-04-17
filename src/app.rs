@@ -8,6 +8,7 @@ use std::result;
 
 use eventual::{Async, Future};
 
+use cli;
 use entry::{Entry, EntryMap};
 use error::{Error};
 use formatter::{Formatter};
@@ -164,23 +165,30 @@ impl App {
                 let path = try!(fmt.format(pattern));
                 let new = self.config.dir.join(path);
 
-                if old != new {
-                    print!("rename `{}' -> `{}'... ", old.display(), new.display());
-                    let result = rename(&old, &new);
-                    let status = if result.is_err() { "failure" } else { "success" };
-                    println!("{}", status);
-                    try!(result);
+                if old == new {
+                    return Ok(());
                 }
+
+                println!("renaming `{}' -> `{}'... ", old.display(), new.display());
+
+                if new.exists() {
+                    let prompt = format!("target `{} exists, override?", new.display());
+                    if !try!(cli::yes_or_no(&prompt, false)) {
+                        println!("skipped");
+                        return Ok(());
+                    }
+                }
+
+                try!(rename(&old, &new));
+
             },
             Transform::Remove { .. } => {
-                print!("remove `{}'...", old.display());
+                println!("remove `{}'...", old.display());
                 let result = if old.is_dir() {
                     remove_dir_all(&old)
                 } else {
                     remove_file(&old)
                 };
-                let status = if result.is_err() { "failure" } else { "success" };
-                println!("{}", status);
                 try!(result);
             }
         }

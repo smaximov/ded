@@ -1,3 +1,6 @@
+use std::io;
+use std::io::{Write};
+
 use clap::{App, Arg, ArgMatches};
 
 pub fn args<'a>() -> ArgMatches<'a> {
@@ -20,4 +23,35 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .long("all")
              .help("Don't ignore hidden files and directories"))
         .get_matches()
+}
+
+pub fn yes_or_no(prompt: &str, default: bool) -> io::Result<bool> {
+    let mut stdout = io::stdout();
+    let stdin = io::stdin();
+
+    let suggest = if default {
+        "Y/n"
+    } else {
+        "y/N"
+    };
+
+    loop {
+        try!(write!(stdout, "{} ({}) ", prompt, suggest));
+        try!(stdout.flush());
+
+        let mut input = String::new();
+
+        try!(stdin.read_line(&mut input));
+
+        let answer = input.trim().to_lowercase();
+
+        match &answer[..] {
+            "y" => return Ok(true),
+            "n" => return Ok(false),
+            "" => return Ok(default),
+            _ => {
+                try!(writeln!(stdout, "answer `y' or 'n'"));
+            }
+        }
+    }
 }
