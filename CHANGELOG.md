@@ -4,8 +4,8 @@
 
 #### Features
 
-*   add `--dry-run' flag ([711b148c](https://gitlab.com/smaximov/ded/commit/711b148c124d88abeb06f66e5a0e4082575a6884))
-*   set the default answer to prompts using flags `--yes' and `--no' ([8df22abf](https://gitlab.com/smaximov/ded/commit/8df22abfc285209dda0c632f52f2b568eb7b4f6b))
+*   add `--dry-run` flag ([711b148c](https://gitlab.com/smaximov/ded/commit/711b148c124d88abeb06f66e5a0e4082575a6884))
+*   set the default answer to prompts using flags `--yes` and `--no` ([8df22abf](https://gitlab.com/smaximov/ded/commit/8df22abfc285209dda0c632f52f2b568eb7b4f6b))
 *   add option to enable verbose output ([ac5e6027](https://gitlab.com/smaximov/ded/commit/ac5e6027d8128917ff045bd95ec834bf91c77ed9))
 *   ask when trying to overwrite existing entries ([29937480](https://gitlab.com/smaximov/ded/commit/29937480a63940d6a0eb90980188409b1dd5f589))
 
@@ -45,6 +45,3 @@
 #### Features
 
 *   rename of directory entries with patterns support ([9b896d56](https://gitlab.com/smaximov/ded/commit/9b896d56744d2307519d85e8385a5d6be4e8fba9))
-
-
-
