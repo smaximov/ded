@@ -44,8 +44,14 @@ fn main() {
 
     let all = args.is_present("all");
 
-    let path = temp_dir(TMP_PREFIX)
-        .expect("error: cannot create temporary directory");
+    let path = match temp_dir(TMP_PREFIX) {
+        Ok(path) => path,
+        Err(e) => {
+            let mut stderr = io::stderr();
+            write!(stderr, "error: cannot create temporary directory: {}", e).unwrap();
+            exit(1);
+        }
+    };
 
     let config = Config::new(&working_dir, &path, &editor, all);
     let mut app = App::new(config);
