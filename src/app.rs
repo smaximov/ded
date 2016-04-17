@@ -174,17 +174,20 @@ impl App {
                     }
                 }
 
-                try!(rename(&old, &new));
-
+                if !self.config.dry_run {
+                    try!(rename(&old, &new));
+                }
             },
             Transform::Remove { .. } => {
                 println!("remove `{}'...", old.display());
-                let result = if old.is_dir() {
-                    remove_dir_all(&old)
-                } else {
-                    remove_file(&old)
-                };
-                try!(result);
+
+                if !self.config.dry_run {
+                    try!(if old.is_dir() {
+                        remove_dir_all(&old)
+                    } else {
+                        remove_file(&old)
+                    });
+                }
             }
         }
 
