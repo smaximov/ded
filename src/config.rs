@@ -1,6 +1,13 @@
+use std::env;
+use std::convert;
+use std::io;
+use std::io::{Write};
 use std::path::{Path, PathBuf};
+use std::process::exit;
 
-use util::{sha1};
+use clap::{ArgMatches};
+
+use util::{get_editor, sha1, temp_dir};
 
 #[derive(Debug)]
 pub struct Config {
@@ -23,5 +30,42 @@ impl Config {
             show_hidden: show_hidden,
             verbose: verbose
         }
+    }
+}
+
+const TMP_PREFIX: &'static str = "ded";
+
+impl<'a> convert::From<ArgMatches<'a>> for Config {
+    fn from(args: ArgMatches<'a>) -> Self {
+        let working_dir = args.value_of("dir")
+            .map(|dir| PathBuf::from(dir).canonicalize())
+            .unwrap_or_else(|| env::current_dir());
+
+        let editor = args.value_of("editor")
+            .map(String::from)
+            .unwrap_or_else(|| get_editor());
+
+        let working_dir = match working_dir {
+            Ok(dir) => dir,
+            Err(e) => {
+                let mut stderr = io::stderr();
+                writeln!(stderr, "error: cannot resolve working directory: {}", e).unwrap();
+                exit(1);
+            }
+        };
+
+        let all = args.is_present("all");
+        let verbose = args.is_present("verbose");
+
+        let path = match temp_dir(TMP_PREFIX) {
+            Ok(path) => path,
+            Err(e) => {
+                let mut stderr = io::stderr();
+                write!(stderr, "error: cannot create temporary directory: {}", e).unwrap();
+                exit(1);
+            }
+        };
+
+        Config::new(&working_dir, &path, &editor, all, verbose)
     }
 }
