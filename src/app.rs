@@ -1,7 +1,6 @@
 use std::collections::{HashSet};
 use std::fs::{remove_dir_all, remove_file, rename, File};
-use std::io;
-use std::io::{Read, Write};
+use std::io::{self, Read, Write};
 use std::process::{Command};
 use std::result;
 

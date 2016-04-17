@@ -1,7 +1,6 @@
 use std::env;
 use std::convert;
-use std::io;
-use std::io::{Write};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::exit;
 
