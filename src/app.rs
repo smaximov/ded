@@ -34,7 +34,7 @@ impl App {
         entries.sort();
         try!(self.write_transforms(&entries));
 
-        let future = Future::spawn(move || EntryMap::from_vec(entries));
+        let future = Future::spawn(move || EntryMap::from(entries));
 
         try!(self.edit_transforms());
 

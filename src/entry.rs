@@ -1,4 +1,5 @@
 use std::cmp::{Ordering};
+use std::convert;
 use std::error;
 use std::fmt;
 use std::ops::{Deref};
@@ -132,14 +133,6 @@ impl EntryMap {
         EntryMap(SequenceTrie::new())
     }
 
-    pub fn from_vec(vec: Vec<Entry>) -> Self {
-        let mut map = Self::new();
-        for entry in vec {
-            map.insert(entry);
-        }
-        map
-    }
-
     pub fn insert(&mut self, entry: Entry) -> bool {
         let hash = String::from(entry.hash());
         let hash_chars: Vec<_> = hash.chars().collect();
@@ -167,6 +160,16 @@ impl EntryMap {
                 Err(Error::Ambiguous(String::from(hash), matches))
             }
         }
+    }
+}
+
+impl convert::From<Vec<Entry>> for EntryMap {
+    fn from(vec: Vec<Entry>) -> Self {
+        let mut map = Self::new();
+        for entry in vec {
+            map.insert(entry);
+        }
+        map
     }
 }
 
