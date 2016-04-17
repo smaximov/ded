@@ -160,8 +160,15 @@ impl App {
                 println!("renaming `{}' -> `{}'... ", old.display(), new.display());
 
                 if new.exists() {
-                    let prompt = format!("target `{} exists, override?", new.display());
-                    if !try!(cli::yes_or_no(&prompt, false)) {
+                    let skip = !match self.config.default_answer {
+                        Some(answer) => answer,
+                        _ => {
+                            let prompt = format!("target `{} exists, override?", new.display());
+                            try!(cli::yes_or_no(&prompt, false))
+                        }
+                    };
+
+                    if skip {
                         println!("skipped");
                         return Ok(());
                     }

@@ -26,6 +26,16 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .short("v")
              .long("verbose")
              .help("Tell more details [disabled by default]"))
+        .arg(Arg::with_name("yes")
+             .short("y")
+             .long("yes")
+             .conflicts_with("no")
+             .help("Assume answer `yes' to all questions [disabled by default]"))
+        .arg(Arg::with_name("no")
+             .short("n")
+             .long("no")
+             .conflicts_with("yes")
+             .help("Assume anser `no' to all questions [disabled by default]"))
         .get_matches()
 }
 

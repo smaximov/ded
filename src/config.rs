@@ -16,11 +16,13 @@ pub struct Config {
     pub editor: String,
     pub hash_width: usize,
     pub show_hidden: bool,
-    pub verbose: bool
+    pub verbose: bool,
+    pub default_answer: Option<bool>
 }
 
 impl Config {
-    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool, verbose: bool) -> Self {
+    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool,
+                               verbose: bool, default_answer: Option<bool>) -> Self {
         let dir = dir.as_ref();
         Config {
             dir: dir.to_path_buf(),
@@ -28,7 +30,8 @@ impl Config {
             transforms_path: tmp_dir.as_ref().join(sha1(&dir.to_string_lossy())),
             hash_width: 8,
             show_hidden: show_hidden,
-            verbose: verbose
+            verbose: verbose,
+            default_answer: default_answer
         }
     }
 }
@@ -66,6 +69,14 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
             }
         };
 
-        Config::new(&working_dir, &path, &editor, all, verbose)
+        let default_answer = if args.is_present("yes") {
+            Some(true)
+        } else if args.is_present("no") {
+            Some(false)
+        } else {
+            None
+        };
+
+        Config::new(&working_dir, &path, &editor, all, verbose, default_answer)
     }
 }
