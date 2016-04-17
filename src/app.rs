@@ -8,7 +8,6 @@ use std::result;
 use eventual::{Async, Future};
 
 use config::{Config};
-use cli;
 use entry::{Entry, EntryMap};
 use error::{Error};
 use formatter::{Formatter};
@@ -143,6 +142,42 @@ impl App {
         Ok(())
     }
 
+    fn yes_or_no(&self, prompt: &str, default: bool) -> io::Result<bool> {
+        if let Some(answer) = self.config.default_answer {
+            return Ok(answer);
+        }
+
+        let mut stdout = io::stdout();
+        let stdin = io::stdin();
+
+        let suggest = if default {
+            "Y/n"
+        } else {
+            "y/N"
+        };
+
+        loop {
+            try!(write!(stdout, "{} ({}) ", prompt, suggest));
+            try!(stdout.flush());
+
+            let mut input = String::new();
+
+            try!(stdin.read_line(&mut input));
+
+            let answer = input.trim().to_lowercase();
+
+            match &answer[..] {
+                "y" => return Ok(true),
+                "n" => return Ok(false),
+                "" => return Ok(default),
+                _ => {
+                    try!(writeln!(stdout, "answer `y' or 'n'"));
+                }
+            }
+        }
+    }
+
+
     fn apply_transform(&self, entries: &EntryMap, transform: &Transform, fmt: &mut Formatter) -> Result<()> {
         let hash = transform.hash_fragment();
         let entry = try!(entries.get(hash));
@@ -160,15 +195,9 @@ impl App {
                 println!("renaming `{}' -> `{}'... ", old.display(), new.display());
 
                 if new.exists() {
-                    let skip = !match self.config.default_answer {
-                        Some(answer) => answer,
-                        _ => {
-                            let prompt = format!("target `{} exists, override?", new.display());
-                            try!(cli::yes_or_no(&prompt, false))
-                        }
-                    };
+                    let prompt = format!("target `{} exists, override?", new.display());
 
-                    if skip {
+                    if !try!(self.yes_or_no(&prompt, false)) {
                         println!("skipped");
                         return Ok(());
                     }
