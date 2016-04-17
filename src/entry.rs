@@ -1,6 +1,11 @@
 use std::cmp::{Ordering};
+use std::error;
+use std::fmt;
 use std::ops::{Deref};
 use std::path::{MAIN_SEPARATOR, Path, PathBuf};
+use std::result;
+
+use sequence_trie::{SequenceTrie};
 
 use util::{sha1};
 
@@ -90,12 +95,6 @@ impl Ord for Entry {
         self.partial_cmp(other).unwrap()
     }
 }
-
-use std::error;
-use std::fmt;
-use std::result;
-
-use sequence_trie::{SequenceTrie};
 
 #[derive(Debug)]
 pub enum Error {
