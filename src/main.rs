@@ -37,7 +37,7 @@ fn main() {
         Ok(dir) => dir,
         Err(e) => {
             let mut stderr = io::stderr();
-            writeln!(stderr, "Cannot resolve working directory: {}", e).unwrap();
+            writeln!(stderr, "error: cannot resolve working directory: {}", e).unwrap();
             exit(1);
         }
     };
@@ -45,14 +45,14 @@ fn main() {
     let all = args.is_present("all");
 
     let path = temp_dir(TMP_PREFIX)
-        .expect("cannot create temporary directory");
+        .expect("error: cannot create temporary directory");
 
     let config = Config::new(&working_dir, &path, &editor, all);
     let mut app = App::new(config);
 
     if let Err(e) = app.run() {
         let mut stderr = io::stderr();
-        writeln!(stderr, "Directory edit error: {}", e).unwrap();
+        writeln!(stderr, "error: cannot edit directory: {}", e).unwrap();
         exit(1);
     }
 }
