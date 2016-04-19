@@ -58,7 +58,7 @@ impl App {
             for ref glob in globs {
                 let pattern = try!(Pattern::new(glob));
 
-                if pattern.matches_with(&entry.basename(), &MATCH_OPTIONS) {
+                if pattern.matches_with(entry.basename(), &MATCH_OPTIONS) {
                     return Ok(true);
                 }
             }
@@ -123,7 +123,7 @@ impl App {
             try!(writeln!(file, "{1: >0$} {2}",
                           self.config.hash_width,
                           entry.hash_short(self.config.hash_width),
-                          Formatter::escape(&entry.basename())));
+                          Formatter::escape(entry.basename())));
         }
 
         Ok(())

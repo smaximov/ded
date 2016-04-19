@@ -13,7 +13,8 @@ use util::{sha1};
 #[derive(Clone, Debug)]
 pub struct Entry {
     path: PathBuf,
-    hash: String
+    hash: String,
+    base: String
 }
 
 impl Entry {
@@ -23,9 +24,18 @@ impl Entry {
     }
 
     fn with_hash(hash: String, path: PathBuf) -> Self {
+        let mut basename = path.file_name()
+            .unwrap_or_else(|| path.as_os_str())
+            .to_string_lossy().into_owned();
+
+        if path.is_dir() {
+            basename.push(MAIN_SEPARATOR);
+        }
+
         Entry {
             path: path,
-            hash: hash
+            hash: hash,
+            base: basename
         }
     }
 
@@ -37,16 +47,8 @@ impl Entry {
         &self.hash()[0..width]
     }
 
-    pub fn basename(&self) -> String {
-        let mut basename = self.path.file_name()
-            .unwrap_or_else(|| self.path.as_os_str())
-            .to_string_lossy().into_owned();
-
-        if self.path.is_dir() {
-            basename.push(MAIN_SEPARATOR);
-        }
-
-        basename
+    pub fn basename(&self) -> &str {
+        &self.base
     }
 
     pub fn is_hidden(&self) -> bool {
