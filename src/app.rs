@@ -5,6 +5,7 @@ use std::process::{Command};
 use std::result;
 
 use eventual::{Async, Future};
+use glob::{MatchOptions, Pattern};
 
 use config::{Config};
 use entry::{Entry, EntryMap};
@@ -19,6 +20,12 @@ pub struct App {
 }
 
 pub type Result<T> = result::Result<T, Error>;
+
+const MATCH_OPTIONS: MatchOptions = MatchOptions {
+    case_sensitive: true,
+    require_literal_separator: false,
+    require_literal_leading_dot: false
+};
 
 impl App {
     pub fn new(config: Config) -> Self {
@@ -46,6 +53,22 @@ impl App {
         Ok(())
     }
 
+    fn matches(&self, entry: &Entry) -> Result<bool> {
+        if let Some(ref globs) = self.config.globs {
+            for ref glob in globs {
+                let pattern = try!(Pattern::new(glob));
+
+                if pattern.matches_with(&entry.basename(), &MATCH_OPTIONS) {
+                    return Ok(true);
+                }
+            }
+
+            return Ok(false);
+        }
+
+        Ok(true)
+    }
+
     fn list_entries(&mut self) -> Result<Vec<Entry>> {
         let entries = try!(self.config.dir.read_dir());
         let mut result = Vec::new();
@@ -56,6 +79,10 @@ impl App {
             let entry = Entry::new(try!(entry).path());
 
             if !self.config.show_hidden && entry.is_hidden() {
+                continue;
+            }
+
+            if !try!(self.matches(&entry)) {
                 continue;
             }
 

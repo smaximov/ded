@@ -36,5 +36,16 @@ pub fn args<'a>() -> ArgMatches<'a> {
         .arg(Arg::with_name("dry-run")
              .long("dry-run")
              .help("Don't take any action, just show which files are modified"))
+        .arg(Arg::with_name("match")
+             .short("m")
+             .long("match")
+             .takes_value(true)
+             .value_name("GLOB")
+             .multiple(true)
+             .number_of_values(1)
+             .help("A glob to filter directory entries{n}\
+                    Note: this options can occur multiple times")
+             .next_line_help(true)
+        )
         .get_matches()
 }

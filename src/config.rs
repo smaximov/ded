@@ -17,12 +17,14 @@ pub struct Config {
     pub show_hidden: bool,
     pub verbose: bool,
     pub default_answer: Option<bool>,
-    pub dry_run: bool
+    pub dry_run: bool,
+    pub globs: Option<Vec<String>>
 }
 
 impl Config {
     pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool,
-                               verbose: bool, default_answer: Option<bool>, dry_run: bool) -> Self {
+                               verbose: bool, default_answer: Option<bool>, dry_run: bool,
+                               globs: Option<Vec<String>>) -> Self {
         let dir = dir.as_ref();
         Config {
             dir: dir.to_path_buf(),
@@ -32,7 +34,8 @@ impl Config {
             show_hidden: show_hidden,
             verbose: verbose,
             default_answer: default_answer,
-            dry_run: dry_run
+            dry_run: dry_run,
+            globs: globs
         }
     }
 }
@@ -80,6 +83,9 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
 
         let dry_run = args.is_present("dry-run");
 
-        Config::new(&working_dir, &path, &editor, all, verbose, default_answer, dry_run)
+        let globs = args.values_of_lossy("match");
+
+        Config::new(&working_dir, &path, &editor, all,
+                    verbose, default_answer, dry_run, globs)
     }
 }

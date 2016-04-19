@@ -9,5 +9,6 @@ repository = "https://gitlab.com/smaximov/ded"
 [dependencies]
 clap = "^2.2.5"
 eventual = "^0.1.6"
+glob = "^0.2.11"
 rust-crypto = "^0.2.35"
 sequence_trie = "^0.0.13"

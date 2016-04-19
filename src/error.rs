@@ -5,6 +5,7 @@ use std::io;
 use std::process::{ExitStatus};
 
 use eventual;
+use glob;
 
 use entry;
 use formatter;
@@ -17,6 +18,7 @@ pub enum Error {
     ParseError(parser::Error),
     EntryMapError(entry::Error),
     AsyncError(eventual::AsyncError<()>),
+    PatternError(glob::PatternError),
     CmdFailure(ExitStatus)
 }
 
@@ -28,6 +30,7 @@ impl fmt::Display for Error {
             Error::ParseError(ref e) => e.fmt(fmt),
             Error::EntryMapError(ref e) => e.fmt(fmt),
             Error::AsyncError(ref e) => write!(fmt, "{:?}", e),
+            Error::PatternError(ref e) => e.fmt(fmt),
             Error::CmdFailure(code) =>
                 write!(fmt, "Command exited with nonzero code: {}", code)
         }
@@ -41,6 +44,7 @@ impl error::Error for Error {
             Error::FormatError(ref e) => e.description(),
             Error::ParseError(ref e) => e.description(),
             Error::EntryMapError(ref e) => e.description(),
+            Error::PatternError(ref e) => e.description(),
             Error::AsyncError(_) => "aborted",
             Error::CmdFailure(_) => "Command exited with nonzero code"
         }
@@ -52,6 +56,7 @@ impl error::Error for Error {
             Error::FormatError(ref e) => Some(e),
             Error::ParseError(ref e) => Some(e),
             Error::EntryMapError(ref e) => Some(e),
+            Error::PatternError(ref e) => Some(e),
             Error::AsyncError(_) => None,
             Error::CmdFailure(_) => None
         }
@@ -85,5 +90,11 @@ impl convert::From<entry::Error> for Error {
 impl convert::From<eventual::AsyncError<()>> for Error {
     fn from(x: eventual::AsyncError<()>) -> Self {
         Error::AsyncError(x)
+    }
+}
+
+impl convert::From<glob::PatternError> for Error {
+    fn from(glob: glob::PatternError) -> Self {
+        Error::PatternError(glob)
     }
 }

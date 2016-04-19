@@ -4,6 +4,7 @@ use std::process::{exit};
 extern crate clap;
 extern crate crypto;
 extern crate eventual;
+extern crate glob;
 extern crate sequence_trie;
 
 pub mod app;
