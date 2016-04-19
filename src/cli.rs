@@ -32,7 +32,7 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .short("n")
              .long("no")
              .conflicts_with("yes")
-             .help("Assume anser `no' to all questions [disabled by default]"))
+             .help("Assume answer `no' to all questions [disabled by default]"))
         .arg(Arg::with_name("dry-run")
              .long("dry-run")
              .help("Don't take any action, just show which files are modified"))
