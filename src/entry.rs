@@ -22,7 +22,7 @@ impl Entry {
         Entry::with_hash(hash, path)
     }
 
-    pub fn with_hash(hash: String, path: PathBuf) -> Self {
+    fn with_hash(hash: String, path: PathBuf) -> Self {
         Entry {
             path: path,
             hash: hash
