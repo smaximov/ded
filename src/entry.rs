@@ -58,6 +58,14 @@ impl Entry {
     pub fn path(&self) -> &Path {
         self.path.deref()
     }
+
+    pub fn is_dir(&self) -> bool {
+        self.path.is_dir()
+    }
+
+    pub fn is_file(&self) -> bool {
+        self.path.is_file()
+    }
 }
 
 impl PartialEq for Entry {

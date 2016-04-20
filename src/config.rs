@@ -18,13 +18,23 @@ pub struct Config {
     pub verbose: bool,
     pub default_answer: Option<bool>,
     pub dry_run: bool,
-    pub globs: Option<Vec<String>>
+    pub globs: Option<Vec<String>>,
+    pub only: Option<Only>,
+}
+
+arg_enum! {
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum Only {
+        Dirs,
+        Files
+    }
 }
 
 impl Config {
     pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool,
                                verbose: bool, default_answer: Option<bool>, dry_run: bool,
-                               globs: Option<Vec<String>>) -> Self {
+                               globs: Option<Vec<String>>,
+                               only: Option<Only>) -> Self {
         let dir = dir.as_ref();
         Config {
             dir: dir.to_path_buf(),
@@ -35,7 +45,8 @@ impl Config {
             verbose: verbose,
             default_answer: default_answer,
             dry_run: dry_run,
-            globs: globs
+            globs: globs,
+            only: only,
         }
     }
 }
@@ -89,7 +100,13 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
 
         let globs = args.values_of_lossy("match");
 
-        Config::new(&working_dir, &path, &editor, all,
-                    verbose, default_answer, dry_run, globs)
+        let only = if args.is_present("only") {
+            Some(value_t!(args, "only", Only).unwrap_or_else(|e| e.exit()))
+        } else {
+            None
+        };
+
+        Config::new(&working_dir, &path, &editor, all, verbose,
+                    default_answer, dry_run, globs, only)
     }
 }

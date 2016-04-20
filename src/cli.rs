@@ -52,5 +52,11 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .takes_value(true)
              .value_name("PATH")
              .help("A path to store ded's temp files [defaults to $TMPDIR/ded]"))
+        .arg(Arg::with_name("only")
+             .long("only")
+             .takes_value(true)
+             .value_name("dirs | files")
+             .possible_values(&["dirs", "files"])
+             .help("List only entries of the specified kind"))
         .get_matches()
 }

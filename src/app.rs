@@ -7,7 +7,7 @@ use std::result;
 use eventual::{Async, Future};
 use glob::{MatchOptions, Pattern};
 
-use config::{Config};
+use config::{Config, Only};
 use entry::{Entry, EntryMap};
 use error::{Error};
 use formatter::{Formatter};
@@ -88,6 +88,16 @@ impl App {
 
             if !self.config.show_hidden && entry.is_hidden() {
                 continue;
+            }
+
+            if let Some(ref only) = self.config.only {
+                if entry.is_dir() && only == &Only::Files {
+                    continue;
+                }
+
+                if entry.is_file() && only == &Only::Dirs {
+                    continue
+                }
             }
 
             if !try!(self.matches(&entry)) {

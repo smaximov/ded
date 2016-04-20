@@ -1,6 +1,7 @@
 use std::io::{self, Write};
 use std::process::{exit};
 
+#[macro_use]
 extern crate clap;
 extern crate crypto;
 extern crate eventual;
