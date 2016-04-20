@@ -36,6 +36,14 @@ impl App {
 
     pub fn run(&mut self) -> Result<()> {
         let mut entries = try!(self.list_entries());
+
+        // Abort if nothing to do
+        if entries.len() == 0 {
+            let mut stderr = io::stderr();
+            try!(writeln!(stderr, "nothing to do: directory listing is empty"));
+            return Ok(());
+        }
+
         entries.sort();
         try!(self.write_transforms(&entries));
 
