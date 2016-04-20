@@ -64,14 +64,18 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
         let all = args.is_present("all");
         let verbose = args.is_present("verbose");
 
-        let path = match temp_dir(TMP_PREFIX) {
-            Ok(path) => path,
-            Err(e) => {
-                let mut stderr = io::stderr();
-                write!(stderr, "error: cannot create temporary directory: {}", e).unwrap();
-                exit(1);
-            }
-        };
+        let path = args.value_of("tmp")
+            .map(|path| PathBuf::from(path))
+            .unwrap_or_else(|| {
+                match temp_dir(TMP_PREFIX) {
+                    Ok(path) => path,
+                    Err(e) => {
+                        let mut stderr = io::stderr();
+                        write!(stderr, "error: cannot create temporary directory: {}", e).unwrap();
+                        exit(1);
+                    }
+                }
+            });
 
         let default_answer = if args.is_present("yes") {
             Some(true)

@@ -45,7 +45,12 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .number_of_values(1)
              .help("A glob to filter directory entries{n}\
                     Note: this options can occur multiple times")
-             .next_line_help(true)
-        )
+             .next_line_help(true))
+        .arg(Arg::with_name("tmp")
+             .short("t")
+             .long("tmp-path")
+             .takes_value(true)
+             .value_name("PATH")
+             .help("A path to store ded's temp files [defaults to $TMPDIR/ded]"))
         .get_matches()
 }
