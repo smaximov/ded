@@ -1,4 +1,17 @@
 <a name=""></a>
+##  v0.5.0 (2016-04-20)
+
+
+#### Features
+
+*   add `--only` option which restricts entries to either dirs or files ([9056b940](https://gitlab.com/smaximov/ded/commit/9056b9407c09a0bf32a9f295d6445d4167e975a2), closes [#3](https://gitlab.com/smaximov/ded/issues/3))
+*   abort if a directory listing appears to be empty ([f0030f85](https://gitlab.com/smaximov/ded/commit/f0030f8558be4b5142c629b24667b6641f8fc9f3), closes [#1](https://gitlab.com/smaximov/ded/issues/1))
+*   add option to control ded's temp directory ([428df506](https://gitlab.com/smaximov/ded/commit/428df506d79fb9c52dbedec4e9a208687c0256b5), closes [#4](https://gitlab.com/smaximov/ded/issues/4))
+*   add option `--match` to list only entries which match any of the provided glob patterns ([7d459344](https://gitlab.com/smaximov/ded/commit/7d45934455e4440c0d25a06d129b94fd81fbf094))
+
+
+
+<a name=""></a>
 ##  v0.4.0 (2016-04-17)
 
 
