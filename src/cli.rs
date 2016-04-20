@@ -44,7 +44,7 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .multiple(true)
              .number_of_values(1)
              .help("A glob to filter directory entries{n}\
-                    Note: this options can occur multiple times")
+                    Note: this options can occur multiple times{n}")
              .next_line_help(true))
         .arg(Arg::with_name("tmp")
              .short("t")
