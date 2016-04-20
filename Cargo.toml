@@ -12,3 +12,6 @@ eventual = "^0.1.6"
 glob = "^0.2.11"
 rust-crypto = "^0.2.35"
 sequence_trie = "^0.0.13"
+
+[dev-dependencies]
+tempdir = "^0.3.4"
