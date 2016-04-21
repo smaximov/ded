@@ -16,7 +16,7 @@ rustup:
     - rustup update
   cache:
     <<: *cache-template
-    files: []
+    paths: []
 
 test-nightly:
   tags:
