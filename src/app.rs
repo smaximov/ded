@@ -267,3 +267,54 @@ impl App {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::{Path};
+
+    use tempdir::{TempDir};
+
+    use super::*;
+
+    struct Directory {
+        name: TempDir,
+        entries: Vec<DirEntry>,
+    }
+
+    impl Directory {
+        fn new(name: &str, entries: Vec<DirEntry>) -> Result<Self> {
+            Ok(Directory {
+                name: try!(TempDir::new(name)),
+                entries: entries
+            })
+        }
+
+        fn path(&self) -> &Path {
+            self.name.path()
+        }
+    }
+
+    #[derive(Debug)]
+    pub enum DirEntry {
+        Dir(String),
+        File(String),
+    }
+
+    macro_rules! directory {
+        ( $name:expr ) => { Directory::new($name, Vec::new()).unwrap() };
+        ( $name:expr, [ $( $entry:expr ),+ ]) => {
+            {
+                let mut entries: Vec<DirEntry> = Vec::new();
+                $(
+                    let s = String::from($entry);
+                    entries.push(if s.ends_with("/") {
+                        DirEntry::Dir(s)
+                    } else {
+                        DirEntry::File(s)
+                    });
+                )+
+                Directory::new($name, entries).unwrap()
+            }
+        };
+    }
+}

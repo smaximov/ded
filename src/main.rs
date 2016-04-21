@@ -8,6 +8,9 @@ extern crate eventual;
 extern crate glob;
 extern crate sequence_trie;
 
+#[cfg(test)]
+extern crate tempdir;
+
 pub mod app;
 pub mod entry;
 pub mod cli;
