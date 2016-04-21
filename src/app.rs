@@ -270,7 +270,8 @@ impl App {
 
 #[cfg(test)]
 mod tests {
-    use std::path::{Path};
+    use std::fs::{create_dir, File};
+    use std::path::{Path, PathBuf};
 
     use tempdir::{TempDir};
 
@@ -278,14 +279,18 @@ mod tests {
 
     struct Directory {
         name: TempDir,
-        entries: Vec<DirEntry>,
     }
 
     impl Directory {
         fn new(name: &str, entries: Vec<DirEntry>) -> Result<Self> {
+            let dir = try!(TempDir::new(name));
+
+            for entry in &entries {
+                try!(entry.create_inside(dir.path()));
+            }
+
             Ok(Directory {
-                name: try!(TempDir::new(name)),
-                entries: entries
+                name: dir,
             })
         }
 
@@ -298,6 +303,29 @@ mod tests {
     pub enum DirEntry {
         Dir(String),
         File(String),
+    }
+
+    impl DirEntry {
+        fn path(&self) -> &str {
+            match *self {
+                DirEntry::Dir(ref path) => path,
+                DirEntry::File(ref path) => path
+            }
+        }
+
+        fn create_inside<P: AsRef<Path>>(&self, dir: P) -> Result<()> {
+            let mut path = PathBuf::from(dir.as_ref());
+            path.push(self.path());
+
+            match *self {
+                DirEntry::Dir(..) => try!(create_dir(&path)),
+                DirEntry::File(..) => {
+                    let _ = try!(File::create(&path));
+                }
+            }
+
+            Ok(())
+        }
     }
 
     macro_rules! directory {
@@ -316,5 +344,94 @@ mod tests {
                 Directory::new($name, entries).unwrap()
             }
         };
+    }
+
+    macro_rules! app {
+        ( $app:ident, [ $( $opt:expr ),* ], $dir:expr, $block:block ) => {
+            {
+                let tmp = directory!("ded");
+                let args = $crate::cli::args_from(vec!["ded", $( $opt , )* ]);
+                let mut config = $crate::config::Config::from(args);
+                config.dir = $dir.path().to_path_buf();
+                config.set_tmp_dir(tmp.path());
+
+                let mut $app = $crate::app::App::new(config);
+
+                let mut entries = $app.list_entries().unwrap();
+                entries.sort();
+                $app.write_transforms(&entries).unwrap();
+
+                $block
+            }
+        };
+    }
+
+    #[test]
+    #[ignore]
+    fn hidden() {
+        let dir = directory!("hidden", [
+            "regular-file",
+            "regular-directory/",
+            ".hidden-file",
+            ".hidden-directory/"
+        ]);
+
+        app!(app, [], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 2);
+        });
+
+        app!(app, ["-a"], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 4);
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn only() {
+        let dir = directory!("only", [
+            "file",
+            "dir1/",
+            "dir2/",
+            "dir3/"
+        ]);
+
+        app!(app, [], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 4);
+        });
+
+        app!(app, ["--only", "dirs"], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 3);
+        });
+
+        app!(app, ["--only", "files"], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 1);
+        });
+    }
+
+    #[test]
+    #[ignore]
+    fn match_glob() {
+        let dir = directory!("match", [
+            "foo",
+            "foobar/",
+            "baaz",
+            "bar",
+            "quuz"
+        ]);
+
+        app!(app, ["-m", "foo*"], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 2);
+        });
+
+        app!(app, ["-m", "foo*", "-m", "ba*"], dir, {
+            let transforms = app.read_transforms().unwrap();
+            assert_eq!(transforms.len(), 4);
+        });
     }
 }

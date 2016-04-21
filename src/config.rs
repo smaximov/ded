@@ -49,6 +49,11 @@ impl Config {
             only: only,
         }
     }
+
+    pub fn set_tmp_dir<P: AsRef<Path>>(&mut self, tmp_dir: P) -> &Self {
+        self.transforms_path = tmp_dir.as_ref().join(sha1(&self.dir.to_string_lossy()));
+        self
+    }
 }
 
 const TMP_PREFIX: &'static str = "ded";
