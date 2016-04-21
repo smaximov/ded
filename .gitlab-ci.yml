@@ -1,30 +1,80 @@
 stages:
+  - build
   - test
 
-beta:
-  image: smaximov/rust:beta
-  stage: test
-  script:
-    - cargo test
-  tags:
-    - rust
-    - rust-beta
-
-nightly:
+.nightly-rust-job: &nightly-template
   image: smaximov/rust:nightly
-  stage: test
   script:
-    - cargo test
+    - 'true'
   tags:
     - rust
     - rust-nightly
 
-# Cannot build with stable Rust at the moment
-.stable:
-  image: smaximov/rust:stable
-  stage: test
+.beta-rust-job: &beta-template
+  image: smaximov/rust:beta
   script:
-    - cargo test
+    - 'true'
+  tags:
+    - rust
+    - rust-beta
+
+.stable-rust-job: &stable-template
+  image: smaximov/rust:stable
+  script:
+    - 'true'
   tags:
     - rust
     - rust-stable
+
+.build-job: &build-template
+  stage: build
+  script:
+    - cargo build
+
+build-nightly:
+  <<: *nightly-template
+  <<: *build-template
+
+build-beta:
+  <<: *beta-template
+  <<: *build-template
+
+.build-stable:
+  <<: *stable-template
+  <<: *build-template
+
+.test-job: &test-template
+  stage: test
+  script:
+    - cargo test
+
+test-nightly:
+  <<: *nightly-template
+  <<: *test-template
+
+test-beta:
+  <<: *beta-template
+  <<: *test-template
+
+.test-stable:
+  <<: *stable-template
+  <<: *test-template
+
+.test-ignored-job: &test-ignored-template
+  <<: *test-template
+  script:
+    - cargo test -- --ignored
+  only:
+    - tags
+
+test-ignored-nightly:
+  <<: *nightly-template
+  <<: *test-ignored-template
+
+test-ignored-beta:
+  <<: *beta-template
+  <<: *test-ignored-template
+
+.test-ignored-stable:
+  <<: *stable-template
+  <<: *test-ignored-template
