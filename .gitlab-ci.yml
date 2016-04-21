@@ -1,3 +1,8 @@
+cache: &cache-template
+  key: "$CI_BUILD_NAME/$CI_BUILD_REF_NAME"
+  paths:
+    - target/
+
 stages:
   - rustup
   - test
@@ -9,6 +14,9 @@ rustup:
     - rust
   script:
     - rustup update
+  cache:
+    <<: *cache-template
+    files: []
 
 test-nightly:
   tags:
