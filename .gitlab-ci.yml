@@ -1,80 +1,71 @@
 stages:
-  - build
+  - rustup
   - test
+  - test-ignored
 
-.nightly-rust-job: &nightly-template
-  image: smaximov/rust:nightly
+rustup:
+  stage: rustup
+  tags:
+    - rust
   script:
-    - 'true'
+    - rustup update
+
+test-nightly:
   tags:
     - rust
     - rust-nightly
-
-.beta-rust-job: &beta-template
-  image: smaximov/rust:beta
+  stage: test
   script:
-    - 'true'
+    - rustup override add nightly
+    - cargo test
+
+test-beta:
   tags:
     - rust
     - rust-beta
-
-.stable-rust-job: &stable-template
-  image: smaximov/rust:stable
+  stage: test
   script:
-    - 'true'
+    - rustup override add beta
+    - cargo test
+
+.test-stable:
   tags:
     - rust
     - rust-stable
-
-.build-job: &build-template
-  stage: build
-  script:
-    - cargo build
-
-build-nightly:
-  <<: *nightly-template
-  <<: *build-template
-
-build-beta:
-  <<: *beta-template
-  <<: *build-template
-
-.build-stable:
-  <<: *stable-template
-  <<: *build-template
-
-.test-job: &test-template
   stage: test
   script:
+    - rustup override add stable
     - cargo test
 
-test-nightly:
-  <<: *nightly-template
-  <<: *test-template
-
-test-beta:
-  <<: *beta-template
-  <<: *test-template
-
-.test-stable:
-  <<: *stable-template
-  <<: *test-template
-
-.test-ignored-job: &test-ignored-template
-  <<: *test-template
-  script:
-    - cargo test -- --ignored
+test-nightly-run-ignored:
+  tags:
+    - rust
+    - rust-nightly
+  stage: test-ignored
   only:
     - tags
+  script:
+    - rustup override add nightly
+    - cargo test -- --ignored
 
-test-ignored-nightly:
-  <<: *nightly-template
-  <<: *test-ignored-template
+test-beta-run-ignored:
+  tags:
+    - rust
+    - rust-beta
+  stage: test-ignored
+  only:
+    - tags
+  script:
+    - rustup override add beta
+    - cargo test -- --ignored
 
-test-ignored-beta:
-  <<: *beta-template
-  <<: *test-ignored-template
-
-.test-ignored-stable:
-  <<: *stable-template
-  <<: *test-ignored-template
+.test-stable-run-ignored:
+  tags:
+    - rust
+    - rust-stable
+  stage: test-ignored
+  only:
+    - tags
+  script:
+    - rustup override add stable
+    - cargo test -- --ignored
