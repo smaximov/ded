@@ -1,6 +1,14 @@
+use std::env;
+use std::ffi;
+
 use clap::{App, Arg, ArgMatches};
 
 pub fn args<'a>() -> ArgMatches<'a> {
+    args_from(env::args_os())
+}
+
+pub fn args_from<'a, I, T>(iter: I) -> ArgMatches<'a>
+    where I: IntoIterator<Item=T>, T: Into<ffi::OsString> {
     App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
@@ -58,5 +66,5 @@ pub fn args<'a>() -> ArgMatches<'a> {
              .value_name("dirs | files")
              .possible_values(&["dirs", "files"])
              .help("List only entries of the specified kind"))
-        .get_matches()
+        .get_matches_from(iter)
 }
