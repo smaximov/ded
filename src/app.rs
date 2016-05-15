@@ -38,7 +38,7 @@ impl App {
         let mut entries = try!(self.list_entries());
 
         // Abort if nothing to do
-        if entries.len() == 0 {
+        if entries.is_empty() {
             let mut stderr = io::stderr();
             try!(writeln!(stderr, "nothing to do: directory listing is empty"));
             return Ok(());
@@ -121,7 +121,7 @@ impl App {
         Ok(result)
     }
 
-    fn write_transforms(&self, entries: &Vec<Entry>) -> Result<()> {
+    fn write_transforms(&self, entries: &[Entry]) -> Result<()> {
         let path = &self.config.transforms_path;
         let mut file = try!(File::create(path));
 
@@ -170,7 +170,7 @@ impl App {
         parser.parse().map_err(|e| e.into())
     }
 
-    fn apply_transforms(&self, entries: &EntryMap, transforms: &Vec<Transform>) -> Result<()> {
+    fn apply_transforms(&self, entries: &EntryMap, transforms: &[Transform]) -> Result<()> {
         let mut fmt = Formatter::new();
         let width = width(transforms.len());
         fmt.width(width);

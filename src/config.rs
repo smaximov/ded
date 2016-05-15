@@ -61,12 +61,10 @@ const TMP_PREFIX: &'static str = "ded";
 impl<'a> convert::From<ArgMatches<'a>> for Config {
     fn from(args: ArgMatches<'a>) -> Self {
         let working_dir = args.value_of("dir")
-            .map(|dir| PathBuf::from(dir).canonicalize())
-            .unwrap_or_else(|| env::current_dir());
+            .map_or_else(env::current_dir, |dir| PathBuf::from(dir).canonicalize());
 
         let editor = args.value_of("editor")
-            .map(String::from)
-            .unwrap_or_else(|| get_editor());
+            .map_or_else(get_editor, String::from);
 
         let working_dir = match working_dir {
             Ok(dir) => dir,
@@ -81,8 +79,7 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
         let verbose = args.is_present("verbose");
 
         let path = args.value_of("tmp")
-            .map(|path| PathBuf::from(path))
-            .unwrap_or_else(|| {
+            .map_or_else(|| {
                 match temp_dir(TMP_PREFIX) {
                     Ok(path) => path,
                     Err(e) => {
@@ -91,7 +88,7 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
                         exit(1);
                     }
                 }
-            });
+            }, PathBuf::from);
 
         let default_answer = if args.is_present("yes") {
             Some(true)

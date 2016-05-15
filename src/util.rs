@@ -25,8 +25,8 @@ pub fn width(n: usize) -> usize {
 
 pub fn get_editor() -> String {
     env::var("VISUAL")
-        .or(env::var("EDITOR"))
-        .unwrap_or(String::from("vi"))
+        .or_else(|_| env::var("EDITOR"))
+        .unwrap_or_else(|_| String::from("vi"))
 }
 
 #[cfg(test)]

@@ -52,7 +52,7 @@ impl Entry {
     }
 
     pub fn is_hidden(&self) -> bool {
-        self.basename().starts_with(".")
+        self.basename().starts_with('.')
     }
 
     pub fn path(&self) -> &Path {
@@ -135,12 +135,12 @@ impl error::Error for Error {
 
 pub type Result<T> = result::Result<T, Error>;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct EntryMap(SequenceTrie<char, Entry>);
 
 impl EntryMap {
     pub fn new() -> Self {
-        EntryMap(SequenceTrie::new())
+        Self::default()
     }
 
     pub fn insert(&mut self, entry: Entry) -> bool {

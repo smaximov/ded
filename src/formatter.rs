@@ -8,12 +8,18 @@ pub struct Formatter {
     counter: usize
 }
 
-impl Formatter {
-    pub fn new() -> Self {
+impl Default for Formatter {
+    fn default() -> Self {
         Formatter {
             width: 1,
-            counter: 1
+            counter: 1,
         }
+    }
+}
+
+impl Formatter {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub fn width(&mut self, width: usize) {
@@ -53,7 +59,7 @@ impl Formatter {
 
         while let Some(c) = iter.next() {
             if c == '%' {
-                let spec = try!(iter.next().ok_or(Error::ExpectedSpec));
+                let spec = try!(iter.next().ok_or(Error::Expected));
 
                 match spec {
                     '%' => buf.push(c),
@@ -62,7 +68,7 @@ impl Formatter {
                         let counter = self.pad_left(counter);
                         buf.push_str(&counter);
                     },
-                    _ => return Err(Error::UnknownSpec(spec))
+                    _ => return Err(Error::Unknown(spec))
                 }
             } else {
                 buf.push(c);
@@ -75,16 +81,16 @@ impl Formatter {
 
 #[derive(PartialEq, PartialOrd, Eq, Ord, Debug)]
 pub enum Error {
-    UnknownSpec(char),
-    ExpectedSpec
+    Unknown(char),
+    Expected
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::UnknownSpec(c) =>
+            Error::Unknown(c) =>
                 try!(write!(fmt, "Unknown conversion specifier: {}", c)),
-            Error::ExpectedSpec =>
+            Error::Expected =>
                 try!(write!(fmt, "Expected conversion specifier or `%'"))
         }
 
@@ -95,8 +101,8 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::UnknownSpec(_) => "Unknown conversion specifier",
-            Error::ExpectedSpec => "Expected conversion specifier"
+            Error::Unknown(_) => "Unknown conversion specifier",
+            Error::Expected => "Expected conversion specifier"
         }
     }
 }
@@ -136,8 +142,8 @@ mod tests {
         assert_eq!(Ok(String::from("foo02.txt")), formatter.format(pattern));
         assert_eq!(Ok(String::from("foo03.txt")), formatter.format(pattern));
 
-        assert_eq!(Err(Error::ExpectedSpec), formatter.format("%"));
-        assert_eq!(Err(Error::UnknownSpec('x')), formatter.format("%x"));
+        assert_eq!(Err(Error::Expected), formatter.format("%"));
+        assert_eq!(Err(Error::Unknown('x')), formatter.format("%x"));
     }
 
     #[test]

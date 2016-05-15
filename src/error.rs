@@ -57,8 +57,7 @@ impl error::Error for Error {
             Error::ParseError(ref e) => Some(e),
             Error::EntryMapError(ref e) => Some(e),
             Error::PatternError(ref e) => Some(e),
-            Error::AsyncError(_) => None,
-            Error::CmdFailure(_) => None
+            Error::AsyncError(_) | Error::CmdFailure(_) => None,
         }
     }
 }

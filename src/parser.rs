@@ -84,7 +84,7 @@ impl Transform {
 
     pub fn hash_fragment(&self) -> &str {
         match *self {
-            Transform::Rename { ref hash_fragment, .. } => hash_fragment,
+            Transform::Rename { ref hash_fragment, .. } |
             Transform::Remove { ref hash_fragment, .. } => hash_fragment
         }
     }
@@ -97,13 +97,19 @@ pub struct Position {
     col: usize
 }
 
-impl Position {
-    fn new() -> Self {
+impl Default for Position {
+    fn default() -> Self {
         Position {
             offset: 0,
             line: 1,
             col: 1
         }
+    }
+}
+
+impl Position {
+    fn new() -> Self {
+        Self::default()
     }
 }
 
@@ -139,7 +145,7 @@ impl Parser {
     }
 
     fn peek(&self) -> Option<char> {
-        self.input.get(self.pos.offset).map(|c| *c)
+        self.input.get(self.pos.offset).cloned()
     }
 
     pub fn position(&self) -> Position {
@@ -147,10 +153,10 @@ impl Parser {
     }
 
     pub fn rest_input(&self) -> String {
-        self.input[self.pos.offset..].iter().map(|c| *c).collect()
+        self.input[self.pos.offset..].iter().cloned().collect()
     }
 
-    fn next(&mut self) -> Option<char> {
+    fn next_char(&mut self) -> Option<char> {
         self.peek().map(|c| {
             self.pos.offset += 1;
 
@@ -168,7 +174,7 @@ impl Parser {
     fn satisfy<F>(&mut self, predicate: F) -> Result<char>
         where F: FnOnce(char) -> bool{
         let pos = self.position();
-        if let Some(c) = self.next() {
+        if let Some(c) = self.next_char() {
             if predicate(c) {
                 Ok(c)
             } else {
@@ -271,7 +277,7 @@ impl Parser {
             }
 
             buf.push(c);
-            self.next();
+            self.next_char();
         }
 
         buf
@@ -348,25 +354,25 @@ mod tests {
     use super::*;
 
     #[test]
-    fn next() {
+    fn next_char() {
         let mut parser = Parser::new("");
 
-        assert_eq!(None, parser.next());
+        assert_eq!(None, parser.next_char());
 
         parser.reset("fo\nba");
 
         assert_eq!(Position { offset: 0, line: 1, col: 1 }, parser.pos);
-        assert_eq!(Some('f'), parser.next());
+        assert_eq!(Some('f'), parser.next_char());
         assert_eq!(Position { offset: 1, line: 1, col: 2 }, parser.pos);
-        assert_eq!(Some('o'), parser.next());
+        assert_eq!(Some('o'), parser.next_char());
         assert_eq!(Position { offset: 2, line: 1, col: 3 }, parser.pos);
-        assert_eq!(Some('\n'), parser.next());
+        assert_eq!(Some('\n'), parser.next_char());
         assert_eq!(Position { offset: 3, line: 2, col: 1 }, parser.pos);
-        assert_eq!(Some('b'), parser.next());
+        assert_eq!(Some('b'), parser.next_char());
         assert_eq!(Position { offset: 4, line: 2, col: 2 }, parser.pos);
-        assert_eq!(Some('a'), parser.next());
+        assert_eq!(Some('a'), parser.next_char());
         assert_eq!(Position { offset: 5, line: 2, col: 3 }, parser.pos);
-        assert_eq!(None, parser.next());
+        assert_eq!(None, parser.next_char());
     }
 
     #[test]
@@ -382,7 +388,7 @@ mod tests {
         let mut parser = Parser::new("f");
         assert_eq!(Ok('f'), parser.satisfy(|c| c == 'f'));
         assert!(parser.satisfy(|c| c == 'x').is_err());
-        parser.next();
+        parser.next_char();
         assert!(parser.satisfy(|c| c == 'f').is_err());
     }
 
