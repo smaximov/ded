@@ -367,7 +367,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn hidden() {
         let dir = directory!("hidden", [
             "regular-file",
@@ -388,7 +387,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn only() {
         let dir = directory!("only", [
             "file",
@@ -414,7 +412,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn match_glob() {
         let dir = directory!("match", [
             "foo",
