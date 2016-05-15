@@ -308,8 +308,8 @@ mod tests {
     impl DirEntry {
         fn path(&self) -> &str {
             match *self {
-                DirEntry::Dir(ref path) => path,
-                DirEntry::File(ref path) => path
+                DirEntry::Dir(ref path) |
+                DirEntry::File(ref path) => path,
             }
         }
 

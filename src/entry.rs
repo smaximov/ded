@@ -191,6 +191,7 @@ mod tests {
 
     #[test]
     fn get_all() {
+        #![allow(blacklisted_name)]
         let foo = Entry::with_hash(String::from("foo"), PathBuf::from("/foo"));
         let foobar = Entry::with_hash(String::from("foobar"), PathBuf::from("/foo/bar"));
         let bar = Entry::with_hash(String::from("bar"), PathBuf::from("/bar"));
