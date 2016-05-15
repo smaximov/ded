@@ -31,26 +31,7 @@ arg_enum! {
 }
 
 impl Config {
-    pub fn new<P: AsRef<Path>>(dir: P, tmp_dir: P, editor: &str, show_hidden: bool,
-                               verbose: bool, default_answer: Option<bool>, dry_run: bool,
-                               globs: Option<Vec<String>>,
-                               only: Option<Only>) -> Self {
-        let dir = dir.as_ref();
-        Config {
-            dir: dir.to_path_buf(),
-            editor: String::from(editor),
-            transforms_path: tmp_dir.as_ref().join(sha1(&dir.to_string_lossy())),
-            hash_width: 8,
-            show_hidden: show_hidden,
-            verbose: verbose,
-            default_answer: default_answer,
-            dry_run: dry_run,
-            globs: globs,
-            only: only,
-        }
-    }
-
-    pub fn set_tmp_dir<P: AsRef<Path>>(&mut self, tmp_dir: P) -> &Self {
+    pub fn set_tmp_dir<P: AsRef<Path>>(&mut self, tmp_dir: P) -> &mut Self {
         self.transforms_path = tmp_dir.as_ref().join(sha1(&self.dir.to_string_lossy()));
         self
     }
@@ -108,7 +89,19 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
             None
         };
 
-        Config::new(&working_dir, &path, &editor, all, verbose,
-                    default_answer, dry_run, globs, only)
+        let transforms_file_name = sha1(&working_dir.to_string_lossy());
+
+        Config {
+            dir: working_dir,
+            editor: editor,
+            transforms_path: path.join(transforms_file_name),
+            hash_width: 8,
+            show_hidden: all,
+            verbose: verbose,
+            default_answer: default_answer,
+            dry_run: dry_run,
+            globs: globs,
+            only: only,
+        }
     }
 }
