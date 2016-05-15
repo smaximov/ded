@@ -26,7 +26,6 @@ test-nightly:
   script:
     - rustup override add nightly
     - cargo test
-    - cargo test -- --ignored
 
 test-beta:
   tags:
@@ -36,7 +35,6 @@ test-beta:
   script:
     - rustup override add beta
     - cargo test
-    - cargo test -- --ignored
 
 .test-stable:
   tags:
@@ -46,4 +44,3 @@ test-beta:
   script:
     - rustup override add stable
     - cargo test
-    - cargo test -- --ignored
