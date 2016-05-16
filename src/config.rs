@@ -89,7 +89,8 @@ impl<'a> convert::From<ArgMatches<'a>> for Config {
             None
         };
 
-        let transforms_file_name = sha1(&working_dir.to_string_lossy());
+        let mut transforms_file_name = sha1(&working_dir.to_string_lossy());
+        transforms_file_name.push_str(".ded");
 
         Config {
             dir: working_dir,
