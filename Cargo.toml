@@ -6,12 +6,8 @@ description = "Directory EDit"
 license-file = "LICENSE"
 repository = "https://gitlab.com/smaximov/ded"
 
-[features]
-default = ["clippy"]
-
 [dependencies]
 clap = "^2.2.5"
-clippy = { version="*", optional = true }
 eventual = "^0.1.6"
 glob = "^0.2.11"
 rust-crypto = "^0.2.35"

@@ -34,7 +34,7 @@ test-beta:
   stage: test
   script:
     - rustup override add beta
-    - cargo test --no-default-features
+    - cargo test
 
 .test-stable:
   tags:
